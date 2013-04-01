@@ -60,7 +60,23 @@ class MortalSoul
 
     reg = 'look'
     prc = Proc.new do |input, matches|
-      ent.entered_room ent.room
+      rm = ent.room
+      ent.see "========== #{rm.name} =========="
+      ent.sense rm
+      if rm.entities and (rm.entities.count - 1) > 0
+        ent.see "Entities:"
+        rm.entities.each do |e|
+          if e != ent
+            ent.see "\t- #{e.name}"
+          end
+        end
+      end
+      if rm.exits and rm.exits.count > 0
+        ent.see "Exits:"
+        rm.exits.each do |exit, dest|
+          ent.see "\t- #{exit} -> #{dest.name}"  
+        end
+      end
     end # LOOK
     ent.add_cmd reg, prc
 

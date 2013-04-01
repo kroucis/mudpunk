@@ -12,10 +12,10 @@ class Creature < Entity
 	include Sensing
 	include Mobile
 
-	CONSCIOUS = nil
+	CONSCIOUS 	= 	nil
 	ASLEEP		=	:asleep
 	BATTERED	=	:battered
-	DYING			=	:dying
+	DYING		=	:dying
 
 	attr_accessor :health
 	attr_accessor :conscious

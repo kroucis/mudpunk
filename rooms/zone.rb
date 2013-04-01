@@ -20,14 +20,9 @@ class Zone
     @rooms = nil if @rooms.count <= 0
   end
 
-  def link_room rm
-    new_exits = { }
-    rm.exits.each do |exit|
-      if not exit.zone
-        room = @rooms[exit.exit]
-        exit.room = room
-      end
-    end
+  def [] key
+    @rooms ||= { }
+    @rooms[key]
   end
 
 end # Zone

@@ -12,4 +12,12 @@ class Entity
 	include Describable
 
 	attr_accessor :room
+
+    def self.from_h itemdef
+        instance = self.new
+        itemdef.each do |key, value|
+            instance.instance_variable_set("@#{key}", value)
+        end
+        instance
+    end
 end

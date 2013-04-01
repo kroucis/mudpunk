@@ -9,5 +9,5 @@ Rake::TestTask.new do |t|
 end
 
 task :run do
-	sh "rbx -X19 -G mud/mudpunk.rb"
+	sh "rbx -X19 mud/mudpunk.rb"
 end

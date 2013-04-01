@@ -6,21 +6,24 @@
 #
 
 require 'singleton'
+require 'yaml'
 
 require_relative '../entities/creatures/player'
 require_relative '../rooms/room'
+require_relative '../rooms/zone'
 
 class MUD
   include Singleton
 
   attr_accessor :players
   attr_accessor :rooms
+  attr_reader :loaded_zones
 
   def initialize
     @players = { }
     @connections = { }
-    @rooms = { }
     @start_time = Time.now
+    @loaded_zones = { }
     puts @start_time.utc
   end
 
@@ -47,26 +50,47 @@ class MUD
   end
 
   def uptime
-    Time.now() - @start_time
+    Time.now - @start_time
   end
 
-  def add_room rm
-    @rooms[rm.name] = rm
-  end
+  def load_zone zonename
+    zone = @loaded_zones[zonename]
+    if not zone
+      zonedef = YAML.load_file("./data/zones/#{zonename}.yaml")
+      zone = Zone.new
+      zone.name = zonedef['name']
+      zonedef['rooms'].each do |roomname, exit_dict|
+        target_room = zone[roomname]
+        if not target_room
+          roomdef = YAML.load_file("./data/rooms/#{roomname}.yaml")
+          target_room = Room.from_h roomdef
+          target_room.exits = { }
+          zone.add_room target_room
+        end
 
-  def link_room rm
-    new_exits = { }
-    rm.exits.each do |e,key|
-      room = @rooms[key]
-      new_exits[e] = room
+        exit_dict.each do |exitname, exit_room|
+          room = zone[exit_room]
+          if not room
+            roomdef = YAML.load_file("./data/rooms/#{exit_room}.yaml")
+            room = Room.from_h roomdef
+            room.exits = { }
+            zone.add_room room
+          end
+          target_room.exits[exitname] = room
+        end
+      end
+      @loaded_zones[zonename] = zone
     end
-    rm.exits = new_exits
+    zone
   end
 
   def find_named name, rm = nil
     found = nil
     if rm
       found = rm.find_named name
+      if not found
+        found = self.find_named name
+      end
     else
       found = Named.get_named(name)
     end

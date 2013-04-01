@@ -20,8 +20,33 @@ class Room
   attr_accessor :exits
 
   def self.from_h rmdef
-    r = Room.new rmdef[:name], rmdef[:descriptions]
-    r.exits = rmdef[:exits]
+    descs = { }
+    rmdef["descriptions"].each do |sense, desc_ary|
+      str = ""
+      counter = 0
+      desc_ary.each do |desc_str|
+        if not desc_str or not desc_str.empty?
+          if counter % 2
+            str += " " + desc_str
+          else
+            str += " " + desc_str.bold
+          end
+          counter += 1
+        end
+      end
+      descs[sense.to_sym] = str
+    end
+
+    r = Room.new rmdef["name"], descs
+
+    if rmdef['entities']
+      rmdef['entities'].each do |cls, entdef|
+        klass = Kernel.const_get(cls)
+        ent = klass.from_h entdef
+        r.add_entity ent
+      end
+    end
+
     r
   end
 
