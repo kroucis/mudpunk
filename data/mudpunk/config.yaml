@@ -1,0 +1,4 @@
+start_zone: Arca Downtown Zone
+start_room: Nostros Hill
+player_save_path: /Users/kyleroucis/The Vault/Programming Stuff/Ruby/mudpunk_private/save_files/players/
+zone_save_path: /Users/kyleroucis/The Vault/Programming Stuff/Ruby/mudpunk_private/save_files/zones/

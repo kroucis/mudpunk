@@ -1,0 +1,11 @@
+name: Nostros Hill
+descriptions:
+    see: 
+        - 'Tall stone buildings line this narrow cobblestone street, their edifices worn and stained by rain and time. Brass piping climbs each building, around each corner, across the narrow gap betwixt them.'
+    smell:
+        - 'The air here is damp and heavy, smelling of one part metal, one part coal smoke, and one part fresh rain.'
+    hear:
+        - 'The light bustle of other Arcans, matamobiles, and creaking of pipes echoes over the stone.'
+entities:
+    - items/tallet
+    - items/gaslamp

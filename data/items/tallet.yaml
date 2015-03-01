@@ -1,0 +1,5 @@
+class: Item
+name: tallet
+weight: 0.02
+descriptions:
+    see: "A tallet; a smooth, oblong crystal with a notch on one end indicating its worth as 1 tallet."

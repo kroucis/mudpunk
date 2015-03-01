@@ -8,94 +8,130 @@
 require 'rubygems'
 require 'eventmachine'
 require 'yaml'
+require 'socket'
 
 require_relative 'mud'
+require_relative 'settings'
+require_relative 'handlers'
+require_relative '../util/player_utils'
+require_relative '../util/room_utils'
+
 require_relative '../souls/mortalsoul'
 require_relative '../souls/wizardsoul'
 require_relative '../souls/devsoul'
 
-require_relative '../entities/items/item'
-require_relative '../entities/creatures/puppy'
+require_relative '../data/mudpunk/items'
+require_relative '../data/mudpunk/creatures'
 
-verbose = false
-host = "127.0.0.1"
-port = 0
-ARGV.each do |arg|
-	if arg == '--verbose' or arg == '-v' then
-		verbose = true
-	else
-		port = arg.to_i
-	end
+def my_first_private_ipv4
+  result = nil
+  address = Socket.ip_address_list.detect{|intf| intf.ipv4_private?}
+  result = address.ip_address if address
+  result
 end
 
-puts "Verbose mode: ON" if verbose
+def my_first_public_ipv4
+  result = nil
+  address = Socket.ip_address_list.detect{|intf| intf.ipv4? and !intf.ipv4_loopback? and !intf.ipv4_multicast? and !intf.ipv4_private?}
+  result = address.ip_address if address
+  result
+end
 
-$config = YAML.load_file './data/mudpunk/mudpunk_config.yaml'
-puts "Loading rooms...".cyan if verbose
-MUD.instance.load_zone $config['start_zone']
+verbose = false
+host = my_first_public_ipv4() || my_first_private_ipv4()
+port = 0
+ARGV.each do |arg|
+  if arg == '--verbose' or arg == '-v' then
+    verbose = true
+  else
+    port = arg.to_i
+  end
+end
 
-# puts "Linking rooms...".magenta if verbose
-# MUD.instance.rooms.each_value do |r|
-# 	MUD.instance.link_room r
-# end
+puts 'Verbose mode: ON' if verbose
 
-# item = Item.new
-# item.weight = 0.02
-# item.name = 'tallet'
-# item.add_desc :see, "A tallet; a smooth, oblong crystal with a notch on one end indicating its worth as 1 tallet."
-# MUD.instance.rooms['Glade'].add_entity item
+def save_chrono_data chrono, verbose=false
+  yamld_chrono = YAML.dump chrono.to_h
+  puts "Saving chrono #{yamld_chrono} to mudpunk_data/chrono.yaml" if verbose
+  File.open("mudpunk_data/chrono.yaml", "w+") do |f| f.write yamld_chrono end
+end
 
-# item = Item.new
-# item.weight = 0.04
-# item.name = 'tallet'
-# item.add_desc :see, "A tallet; a smooth, oblong crystal with two notches on one end indicating its worth as 2 tallet."
-# MUD.instance.rooms['Glade'].add_entity item
+def save_state game, verbose=false
+  game.loaded_zones.each do |zone_name, zone|
+  end
+end
 
-# puppy = Puppy.new
-# puppy.name = 'Rascal'
-# puppy.add_desc :see, "A scrappy dachsund, with a brown nose and wagging tail."
-# puppy.add_desc :smell, "He smells faintly of dirt and wet hair."
-# MUD.instance.rooms['Hell'].add_entity puppy
+Dir.mkdir './mudpunk_data' if not Dir.exists? './mudpunk_data'
+Dir.mkdir './mudpunk_data/player_data' if not Dir.exists? './mudpunk_data/player_data'
+Dir.mkdir './mudpunk_data/room_data' if not Dir.exists? './mudpunk_data/room_data'
+Dir.mkdir './mudpunk_data/security' if not Dir.exists? './mudpunk_data/security'
+
+chrono_data = nil
+if File.exists? './mudpunk_data/chrono.yaml'
+  chrono_data = YAML.load_file './mudpunk_data/chrono.yaml'
+  puts "Loaded chrono #{chrono_data}" if verbose
+end
+
+calendar_data = YAML.load_file './data/mudpunk/calendar.yaml'
+
+chrono_back = MUD::MUD.instance.load_calendar calendar_data, chrono_data
+if chrono_back
+  save_chrono_data chrono_back, verbose
+end
+
+MUD::MUD.instance.load_zone MUD::Settings.instance.start_zone
+
+puts MUD::MUD.instance.chrono_str
+
+MUD::Behaviors::Skillful.set_skills YAML.load_file './data/mudpunk/skills.yaml'
 
 module Connection
-	def post_init
-		send_data "\n\nBy what name are you to be addressed?\n"
-		# @default_command = Proc.new { |d| send_data "#{@name}: #{d}\n" }
-		# @player = nil
-	end
+  attr_accessor :player
 
-	def receive_data data
-		@buffer ||= BufferedTokenizer.new("\r\n")
-		@buffer.extract(data).each do |line|
-			if not @player
-				@player = Player.new line, self
-				@player.send "\n"
-				@player.send "================================= MUDPunk =================================".white.bold
-				@player.send "------------------------ A steampunk text universe ------------------------".cyan.bold
-				@player.send "++++           Created by and Copyright (c) 2012 Kyle Roucis.          ++++".cyan.bold
-				@player.send "||           " + '-=+*+=-'.magenta.bold + '              ' + '-=+*+=-'.green.bold + '            ' + '-=+*+=-'.magenta.bold + "             ||"
-				@player.send "||             *^*                                     *^*               ||"
-				@player.send "                  ---  Welcome to MUDPunk, #{@player.name}!  ---\n"
-				@player.add_soul DevSoul.new
-				@player.add_soul WizardSoul.new
-				@player.add_soul MortalSoul.new
+  def handler= handler
+    @handler = handler
+    @handler.prompt
+  end
 
-				MUD.instance.add_player line, @player
-				start_zone = MUD.instance.loaded_zones[$config['start_zone']]
-				room = start_zone[$config['start_room']]
-				room.add_entity @player
-				@player.room = room
-				MUD.instance.add_connection line, self
-			else
-				@player.handle_input line
-			end
-		end
-	end
+  def post_init
+    self.handler = UserNameHandler.new self
+  end
+
+  def greet player
+    msg = "\n" +
+              "================================== MUDPunk ==================================\n".white.bold + 
+              "------------------------- A steampunk text universe -------------------------\n".cyan.bold + 
+              "++++            Created by and Copyright (c) 2012 Kyle Roucis.           ++++\n".cyan.bold +
+              '||            ' + '-=+*+=-'.magenta.bold + '              ' + '-=+*+=-'.green.bold + '            ' + '-=+*+=-'.magenta.bold + "              ||\n" +
+              "||              *^*                                     *^*                ||\n" +
+              "                   ---  Welcome to MUDPunk, #{player.name}!  ---\n"
+    player.know msg, false
+  end
+
+  def receive_data data
+    @buffer ||= BufferedTokenizer.new("\r\n")
+    @buffer.extract(data).each do |line|
+      line = line.strip
+      if line.length > 0
+        @handler.handle_input line
+      end
+    end
+  end
+
+  def unbind
+    if @player.room
+      MUD::PlayerUtils.save_player @player
+    end
+  end
 
 end # Connection
 
 EM.run do
-	port = 8888 if port == 0
-	puts "Starting server #{host}@#{port}"
-	EM.start_server host, port, Connection
+  port = 8888 if port == 0
+  puts "Starting server #{host}@#{port}"
+  EM.start_server host, port, Connection
+  EM.add_shutdown_hook do 
+    save_chrono_data MUD::MUD.instance.chrono, verbose
+    save_state MUD::MUD.instance, verbose
+  end
 end

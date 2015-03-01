@@ -1,0 +1,4 @@
+name: Arca Outskirts Zone
+rooms:
+    Shadowed Pass:
+        south|Arca Downtown Zone: "Florence Street"

@@ -1,6 +1,6 @@
 require 'test/unit'
 
-require_relative '../types/contains'
+require_relative '../behaviors/contains'
 
 require_relative '../entities/entity'
 require_relative '../entities/items/item'

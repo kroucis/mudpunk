@@ -1,6 +1,6 @@
 require 'test/unit'
 
-require_relative '../types/describable'
+require_relative '../behaviors/describable'
 
 class Desc
   include Describable

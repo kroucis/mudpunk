@@ -1,0 +1,30 @@
+name: Arca Downtown Zone
+rooms:
+    Nostros Hill:
+        northeast: Florence Street
+        south|Arca Suburbs Zone: Flotsom Avenue
+        north: Amber Row Southwest
+    Florence Street:
+        north: Amber Row Northeast
+        west: Amber Row Southwest
+        southwest: Nostros Hill
+        south: Steam Village West
+        northeast: Meechims Matatorium
+        east: Rugged and Fancy
+    Steam Village West:
+        north: Florence Street
+        east: Steam Village East
+        south|Arca Suburbs Zone: Flotsom Avenue
+    Steam Village East:
+        west: Steam Village West
+        south|Arca Suburbs Zone: Delchanan Boulevard North
+    Meechims Matatorium:
+        southwest: Florence Street
+    Amber Row Northeast:
+        southwest: Amber Row Southwest
+        south: Florence Street
+    Amber Row Southwest:
+        south: Nostros Hill
+        east: Florence Street
+    Rugged and Fancy:
+        west: Florence Street

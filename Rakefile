@@ -9,5 +9,9 @@ Rake::TestTask.new do |t|
 end
 
 task :run do
-	sh "rbx -X19 mud/mudpunk.rb"
+	# if sh 'which rbx' and /1\.9/.match(`rbx --version`)
+ #        sh "rbx -X19 mud/mudpunk.rb"
+ #    else
+        sh "ruby mud/mudpunk.rb"
+    # end
 end

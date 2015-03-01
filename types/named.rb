@@ -5,17 +5,17 @@
 #
 
 module Named
-	protected
-	@@named = { }
-
 	public
 	attr_reader :name
 
 	def self.get_named name
+		@@named ||= { }
 		@@named[name]
 	end
 
 	def name= name
+		@@named ||= { }
+		@@named.delete @name
 		@name = name
 		@@named[@name] = self
 	end

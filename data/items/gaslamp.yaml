@@ -1,0 +1,4 @@
+class: Entity
+name: gaslamp
+descriptions:
+    see: "This black-painted gaslamp stands vigil over the dim streets of Nostros Hill."

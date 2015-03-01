@@ -32,6 +32,13 @@ Rubinius 2.0.0 (current head). The Rakefile will invoke
 
 which means rake should be invoked from the project root.
 
+*UPDATE*
+Rubinius has been broken for some time now. However, simply invoking
+
+    ruby mud/mudpunk.rb
+
+will be sufficient to run MUD Punk provided you have the eventmachine gem installed
+
 Dependencies (gems)
 -------------------
 * eventmachine 1.0.0+

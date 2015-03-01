@@ -1,0 +1,13 @@
+class: Creature
+name: Rusty
+descriptions:
+    see: "A small bipedal mata."
+entity_entered: |
+    if entity.is_a? Player
+        entity.hear "\rRusty says: <Greetings valued customer.>"
+        entity.prompt
+    end
+entity_exited: |
+    if entity.is_a? Player
+        entity.hear "\rRusty says: <Please come again.>"
+    end

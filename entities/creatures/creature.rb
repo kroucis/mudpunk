@@ -5,48 +5,93 @@
 #
 
 require_relative '../entity'
-require_relative '../../types/sensing'
-require_relative '../../types/mobile'
+require_relative '../../behaviors/sensing'
+require_relative '../../behaviors/mobile'
+require_relative '../../behaviors/healthy'
+require_relative '../../behaviors/reactive'
+require_relative 'player'
 
-class Creature < Entity
-	include Sensing
-	include Mobile
+module MUD
+  module Entities
+    class Creature < Entity
+      include Behaviors::Sensing
+      include Behaviors::Mobile
+      include Behaviors::Healthy
+      include Behaviors::Reactive
 
-	CONSCIOUS 	= 	nil
-	ASLEEP		=	:asleep
-	BATTERED	=	:battered
-	DYING		=	:dying
+      def initialize
+        @sensing_states = [ ]
+        @mobile_states = [ ]
+        @injury = Behaviors::Healthy::HEALTHY
+      end
 
-	attr_accessor :health
-	attr_accessor :conscious
+      def from_h hash
+        super
+        self.conscious = hash[:conscious]
+        self.sensing_states = hash[:sensing_states] || [ ]
+        self.mobile_states = hash[:mobile_states] || [ ]
+        self.injury = hash[:injury] || Behaviors::Healthy::HEALTHY
+        @onEntityEntered = hash[:entity_entered]
+        @onEntityExited = hash[:entity_exited]
+        @onDeath = hash[:dead]
+      end
 
-	def initialize
-		@sensing_states = [ ]
-		@mobile_states = [ ]
-	end
+      def to_h
+        result = super
+        result[:mobile_states] = self.mobile_states
+        result[:sensing_states] = self.sensing_states
+        result[:conscious] = self.conscious
+        result[:injury] = self.injury || Behaviors::Healthy::HEALTHY
+        result[:entity_entered] = @onEntityEntered if @onEntityEntered
+        result[:entity_exited] = @onEntityExited if @onEntityExited
+        result[:dead] = @onDeath if @onDeath
+        result
+      end
 
-	def knock_unconscious!
-		@conscious = Creature::BATTERED
-	end
+      def died
+        mud = MUD.instance
+        zone = nil
+        room = nil
+        if self.room
+          room = self.room
+          zone = room.zone
+        end
 
-	def conscious?
-		@conscious == Creature::CONSCIOUS
-	end
+        eval @onDeath if @onDeath
+      end
 
-	def can_see?
-		self.conscious? and super
-	end
+      def entity_entered_room entity, room
+        if @onEntityEntered
+          mud = MUD.instance
+          zone = room.zone
 
-	def can_hear?
-		self.conscious? and super
-	end
+          eval @onEntityEntered
+        end
+      end
 
-	def can_smell?
-		self.conscious? and super
-	end
+      def entity_exited_room entity, room
+        if @onEntityExited
+          mud = MUD.instance
+          zone = room.zone
 
-	def can_feel?
-		self.conscious? and super
-	end
+          eval @onEntityExited
+        end
+      end
+
+      protected
+      def corpsify
+        self.room.show "#{self.name} died."
+        corpse = Entity.new
+        corpse.name = "A dead #{self.name}"
+        z = self.zone
+        r = self.room
+        r.remove_entity self, true
+        r.add_entity corpse, true
+        corpse.zone = z
+      end
+
+    end # Creature
+
+  end
 
 end

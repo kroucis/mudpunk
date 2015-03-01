@@ -1,0 +1,92 @@
+---
+:class: MUD::Entities::Player
+:name: Grim
+:descriptions:
+  :see: Grim is an upstanding citizen of our fair city.
+  :hear: 
+  :smell: 
+  :feel: 
+  :know: 
+:zone_name: Arca Downtown Zone
+:room_name: Nostros Hill
+:mobile_states: []
+:sensing_states: []
+:conscious: 
+:injury: 0
+:inventory:
+- :class: MUD::Entities::Item
+  :name: tallet
+  :descriptions:
+    :see: A tallet; a smooth, oblong crystal with a notch on one end indicating its
+      worth as 1 tallet.
+    :hear: 
+    :smell: 
+    :feel: 
+    :know: 
+  :weight: 0.02
+- :class: MUD::Entities::Item
+  :name: tallet
+  :descriptions:
+    :see: A tallet; a smooth, oblong crystal with a notch on one end indicating its
+      worth as 1 tallet.
+    :hear: 
+    :smell: 
+    :feel: 
+    :know: 
+  :weight: 0.02
+- :class: MUD::Entities::Item
+  :name: tallet
+  :descriptions:
+    :see: A tallet; a smooth, oblong crystal with a notch on one end indicating its
+      worth as 1 tallet.
+    :hear: 
+    :smell: 
+    :feel: 
+    :know: 
+  :weight: 0.02
+:souls:
+- MUD::Souls::DevSoul
+- MUD::Souls::WizardSoul
+- MUD::Souls::MortalSoul
+:skills:
+  :perception: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :perception
+    level: 1
+    progress: 0
+  :automation: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :automation
+    level: 1
+    progress: 0
+  :unarmed: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :unarmed
+    level: 1
+    progress: 0
+  :light melee: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :light melee
+    level: 1
+    progress: 0
+  :heavy melee: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :heavy melee
+    level: 1
+    progress: 0
+  :pistols: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :pistols
+    level: 1
+    progress: 0
+  :rifles: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :rifles
+    level: 1
+    progress: 0
+  :guile: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :guile
+    level: 1
+    progress: 0
+  :charm: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :charm
+    level: 1
+    progress: 0
+  :swiftness: !ruby/struct:MUD::Behaviors::Skillful::Skill
+    name: :swiftness
+    level: 1
+    progress: 0
+:equipment: {}

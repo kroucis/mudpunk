@@ -4,56 +4,78 @@
 # WizardSoul
 #
 
-class WizardSoul
-	def attach ent
-		reg = 'status'
-		prc = Proc.new do |input, matches|
-				stats = ent.statuses
-				if stats.count > 0
-					ent.send 'Status Effects:'
-					stats.each do |s|
-						ent.send "- #{s.to_s.capitalize}"
+module MUD
+	module Souls
+		class WizardSoul
+			def attach ent
+				reg = 'status'
+				prc = Proc.new do |input, matches|
+						stats = ent.statuses
+						if stats.count > 0
+							ent.know 'Status Effects:'
+							stats.each do |s|
+								ent.know "- #{s.to_s.capitalize}"
+							end
+						else
+							ent.know "No Status Effects"
+						end
+						ent.prompt
 					end
-				else
-					ent.send "No Status Effects"
-				end
-			end
-		ent.add_cmd reg, prc
+				ent.add_cmd reg, prc
 
-		reg = /broadcast\s+([\S]+)/
-		prc = Proc.new do |input, matches|
-				match = matches.flatten()[0]
-				MUD.instance.players.each do |n, p|
-					p.send match.bg_cyan.clear
-				end
-			end
-		ent.add_cmd reg, prc, 'broadcast <message>'
+				reg = /broadcast\s+([\s\S]+)/
+				prc = Proc.new do |input, matches|
+						match = matches.flatten()[0]
+						MUD.instance.players.each do |n, p|
+							p.know match.bg_cyan.clear
+							p.prompt
+						end
+					end
+				ent.add_cmd reg, prc, 'broadcast <message>'
 
-		reg = /warn\s+([\s\S]+)/
-		prc = Proc.new do |input, matches|
-				match = matches.flatten()[0]
-				MUD.instance.players.each do |n, p|
-					p.send match.bg_red.clear
-				end
-			end
-		ent.add_cmd reg, prc, 'warn <message>'
+				reg = /warn\s+([\s\S]+)/
+				prc = Proc.new do |input, matches|
+						match = matches.flatten()[0]
+						MUD.instance.players.each do |n, p|
+							p.know match.bg_red.clear
+							p.prompt
+						end
+					end
+				ent.add_cmd reg, prc, 'warn <message>'
 
-		reg = 'uptime'
-		prc = Proc.new do |input, matches|
-				ent.send "Uptime: #{MUD.instance.uptime.to_s}s"
-			end
-		ent.add_cmd reg, prc
+				reg = 'uptime'
+				prc = Proc.new do |input, matches|
+						ent.know "Uptime: #{MUD.instance.uptime.to_s}s"
+						ent.prompt
+					end
+				ent.add_cmd reg, prc
 
-		reg = 'time'
-		prc = Proc.new do |input, matches|
-				ent.send Time.now.to_s
-			end
-		ent.add_cmd reg, prc
-	end # attach
+				reg = 'time'
+				prc = Proc.new do |input, matches|
+						ent.know Time.now.to_s
+						ent.prompt
+					end
+				ent.add_cmd reg, prc
 
-	def detach ent
-		ent.remove_cmd('status')
-		ent.remove_cmd(/broadcast ([\s\S]+)/)
-	end # detach
+				reg = 'skills'
+				prc = Proc.new do |input, matches|
+						ent.know "Skills"
+						ent.know "------------"
+						ent.skills.each do |key, skill|
+							ent.know "#{key.to_s.capitalize} -> lvl #{skill.level} | xp #{skill.progress}"
+						end
+						ent.prompt
+					end
+				ent.add_cmd reg, prc
+			end # attach
 
-end # WizardSoul
+			def detach ent
+				ent.remove_cmd('status')
+				ent.remove_cmd(/broadcast ([\s\S]+)/)
+			end # detach
+
+		end # WizardSoul
+
+	end
+
+end

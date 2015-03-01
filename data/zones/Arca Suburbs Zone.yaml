@@ -1,0 +1,27 @@
+name: Arca Suburbs Zone
+rooms:
+    Flotsom Avenue:
+        south: Oriana Plaza
+        north|Arca Downtown Zone: Steam Village West
+        west|Arca Downtown Zone: Nostros Hill
+    Oriana Plaza:
+        north: Flotsom Avenue
+        up: Oriana Plaza Courtyard
+        west: Piece of the World
+        south: Rhodes Avenue
+    Oriana Plaza Courtyard:
+        down: Oriana Plaza
+    Rhodes Avenue:
+        north: Oriana Plaza
+        east: Gates of Arca
+    Gates of Arca: 
+        west: Rhodes Avenue
+        east: Delchanan Boulevard South
+    Delchanan Boulevard South:
+        west: Gates of Arca
+        north: Delchanan Boulevard north
+    Piece of the World:
+        west: Oriana Plaza
+    Delchanan Boulevard North:
+        south: Delchanan Boulevard South
+        north|Arca Downtown Zone: Steam Village East

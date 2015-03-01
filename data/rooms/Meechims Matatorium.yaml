@@ -1,0 +1,9 @@
+name: J. Meechim's Matatorium
+filename: Meechims Matatorium
+descriptions:
+    see:
+        - "Known throughout Arca as *the* place to purchase anything related to mata, Meechim's is packed to the ceiling with cogs, gears, springs, piping, analog processors, and pre-built mata."
+    smell:
+        - "A mix of metallic odors and grease hang noticably in the stale air."
+entities:
+    - creatures/rusty
